@@ -1,0 +1,112 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context="com.plant.plant.EditPlantActivity">
+
+    <ScrollView
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        android:fillViewport="true"
+        android:scrollbarStyle="insideInset"
+        android:scrollbars="vertical"
+        tools:layout_editor_absoluteX="0dp">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/editText"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:ems="10"
+                android:inputType="textPersonName"
+                android:text="Insert Plant Name"
+                android:textSize="40dp"
+                android:layout_marginBottom="5dp"/>
+
+            <ImageView
+                android:id="@+id/plantImage"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:srcCompat="@android:drawable/radiobutton_off_background"
+                android:layout_marginBottom="20dp"/>
+
+            <TextView
+                android:id="@+id/wateringIntervalLabel"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:ems="10"
+                android:inputType="textPersonName"
+                android:text="Watering Interval"
+                android:textSize="30dp"
+                android:layout_marginBottom="5dp"/>
+
+            <SeekBar
+                android:id="@+id/wateringIntervalSeek"
+                style="@style/Widget.AppCompat.SeekBar.Discrete"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:max="20"
+                android:progress="0"
+                android:layout_marginBottom="5dp"/>
+
+            <TextView
+                android:id="@+id/wateringIntervalDays"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:ems="10"
+                android:inputType="textPersonName"
+                android:text="_____ Days"
+                android:textSize="20dp"
+                android:layout_marginBottom="20dp"/>
+
+            <TextView
+                android:id="@+id/locationLabel"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:ems="10"
+                android:inputType="textPersonName"
+                android:text="Location"
+                android:textSize="30dp"
+                android:layout_marginBottom="5dp"/>
+
+            <Button
+                android:id="@+id/locationButton"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Click to add this location"
+                android:layout_marginBottom="20dp"/>
+
+            <TextView
+                android:id="@+id/notesLabel"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:ems="10"
+                android:inputType="textPersonName"
+                android:text="Notes"
+                android:textSize="30dp"/>
+
+            <EditText android:id="@+id/notesText"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:hint="Write notes here..."
+                android:layout_weight="1"/>
+
+            <ImageButton
+                android:id="@+id/btnSavePlant"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="bottom|center_horizontal"
+                android:onClick="savePlant"
+                android:src="@drawable/save"
+                android:text="@string/save_plant"
+                app:layout_anchor="@+id/include"
+                app:layout_anchorGravity="center_vertical|center_horizontal" />
+        </LinearLayout>
+    </ScrollView>
+</android.support.constraint.ConstraintLayout>
