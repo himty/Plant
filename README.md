@@ -1,6 +1,5 @@
 # PLONT # 
-<br> 
-Hello! screen <br> 
+Hello! screen ☞ plant map<br> 
 ☟ <br> 
 List of plants, plus-sign button at bottom <br>
 ☟☝︎<br>
