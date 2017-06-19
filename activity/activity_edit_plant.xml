@@ -12,7 +12,8 @@
         android:fillViewport="true"
         android:scrollbarStyle="insideInset"
         android:scrollbars="vertical"
-        tools:layout_editor_absoluteX="0dp">
+        tools:layout_editor_absoluteX="16dp"
+        tools:layout_editor_absoluteY="-203dp">
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -23,53 +24,69 @@
                 android:id="@+id/editText"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:layout_marginBottom="5dp"
                 android:ems="10"
-                android:inputType="textPersonName"
+                android:inputType="textMultiLine"
                 android:text="Insert Plant Name"
                 android:textSize="40sp"
-                android:layout_marginBottom="5dp"/>
+                android:gravity="center"/>
 
             <ImageView
                 android:id="@+id/plantImage"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:src="@drawable/no_picture"/>
+                android:src="@drawable/no_picture" />
+
+            <Button
+                android:id="@+id/button"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Take a Picture"
+                android:onClick="takePicture"/>
 
             <TextView
                 android:id="@+id/wateringIntervalLabel"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:layout_marginBottom="5dp"
                 android:ems="10"
                 android:inputType="textPersonName"
                 android:text="Watering Interval"
-                android:textSize="30sp"
-                android:layout_marginBottom="5dp"/>
+                android:textSize="30sp" />
 
-            <SeekBar
-                android:id="@+id/wateringIntervalSeek"
-                style="@style/Widget.AppCompat.SeekBar.Discrete"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:max="20"
-                android:layout_marginBottom="5dp"/>
+            <LinearLayout
+                android:layout_width="fill_parent"
+                android:layout_height="fill_parent"
+                android:orientation="horizontal">
 
-            <TextView
-                android:id="@+id/wateringIntervalDays"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:ems="10"
-                android:text="_____ Days"
-                android:textSize="20sp"
-                android:layout_marginBottom="20dp"/>
+                <EditText
+                    android:id="@+id/wateringIntervalDays"
+                    android:layout_width="60dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="20dp"
+                    android:ems="10"
+                    android:text=""
+                    android:textSize="20sp"
+                    android:inputType="number" />
+
+                <TextView
+                    android:id="@+id/wateringIntervalDaysLabel"
+                    android:layout_width="fill_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="20dp"
+                    android:ems="10"
+                    android:text=" Days"
+                    android:textSize="20sp" />
+            </LinearLayout>
 
             <TextView
                 android:id="@+id/locationLabel"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:layout_marginBottom="5dp"
                 android:ems="10"
                 android:text="Location"
-                android:textSize="30sp"
-                android:layout_marginBottom="5dp"/>
+                android:textSize="30sp" />
 
             <TextView
                 android:id="@+id/editText2"
@@ -83,9 +100,9 @@
                 android:id="@+id/locationButton"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="Click to add this location"
+                android:layout_marginBottom="20dp"
                 android:onClick="setLocation"
-                android:layout_marginBottom="20dp"/>
+                android:text="Click to add this location" />
 
             <TextView
                 android:id="@+id/notesLabel"
@@ -93,14 +110,15 @@
                 android:layout_height="wrap_content"
                 android:ems="10"
                 android:text="Notes"
-                android:textSize="30sp"/>
+                android:textSize="30sp" />
 
-            <EditText android:id="@+id/notesText"
+            <EditText
+                android:id="@+id/notesText"
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
                 android:hint="Write notes here..."
-                android:maxLength="10000"
-                android:inputType="textCapSentences|textMultiLine"/>
+                android:inputType="textCapSentences|textMultiLine"
+                android:maxLength="10000" />
 
             <ImageButton
                 android:id="@+id/btnSavePlant"
