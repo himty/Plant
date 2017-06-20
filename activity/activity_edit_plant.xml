@@ -35,14 +35,22 @@
                 android:id="@+id/plantImage"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:src="@drawable/no_picture" />
+                android:src="@drawable/no_picture"
+                android:layout_gravity="center_horizontal"/>
 
             <Button
-                android:id="@+id/button"
+                android:id="@+id/takePictureButton"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="Take a Picture"
                 android:onClick="takePicture"/>
+
+            <Button
+                android:id="@+id/btnRotatePlant"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Rotate Image"
+                android:onClick="rotatePlant"/>
 
             <TextView
                 android:id="@+id/wateringIntervalLabel"
