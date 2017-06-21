@@ -226,11 +226,10 @@ public class EditPlantActivity extends AppCompatActivity{
 
         //create plant object from data on this activity
         //TODO: add days object to Plant initialization
-//        Plant plantObj = new Plant();
         Log.i(TAG, wateringIntervalDays.getText().toString());
         Integer wateringIntervalTemp;
         String wateringIntervalTemp2 = wateringIntervalDays.getText().toString();
-        if (wateringIntervalTemp2 == null || wateringIntervalTemp2.equals("")) {
+        if (wateringIntervalTemp2.equals("")) {
             wateringIntervalTemp = null;
         } else {
             wateringIntervalTemp = Integer.valueOf(wateringIntervalTemp2);
@@ -241,7 +240,7 @@ public class EditPlantActivity extends AppCompatActivity{
 
         File plantFile = null;
         try {
-            plantFile = createImageFile();
+            plantFile = createPlantFile();
         }
         catch (Exception e) {
             e.printStackTrace();
@@ -367,7 +366,22 @@ public class EditPlantActivity extends AppCompatActivity{
      * precondition: plant name is not duplicated
      */
     private File createPlantFile() throws IOException {
-        String plantFileName = plantName.getText().toString();
+        String plantFileName = plantName.getText().toString().trim();
+
+        //delete mutiple spaces and punctuation
+        char prevChar = plantFileName.charAt(0);
+        int i = 1;
+        while (i < plantFileName.length() - 1) {
+            if (prevChar == ' ' && plantFileName.charAt(i) == ' ') {
+                plantFileName = plantFileName.substring(0, i) + plantFileName.substring(i+1);
+            } else {
+                prevChar = plantFileName.charAt(i);
+                i++;
+            }
+        }
+
+        plantName.setText(plantFileName); //fix the displayed name while you're at it
+        plantFileName = plantFileName.replace(" ", "_").toLowerCase();
         File storageDir = getExternalFilesDir(Environment.DIRECTORY_PICTURES);
         File plantFile = File.createTempFile(
                 plantFileName,  /* prefix */
