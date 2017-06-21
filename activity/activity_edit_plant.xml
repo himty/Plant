@@ -21,15 +21,68 @@
             android:orientation="vertical">
 
             <TextView
-                android:id="@+id/editText"
+                android:id="@+id/titleLabel"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="5dp"
                 android:ems="10"
                 android:inputType="textMultiLine"
-                android:text="Insert Plant Name"
+                android:text="Plant Editor"
                 android:textSize="40sp"
                 android:gravity="center"/>
+
+            <LinearLayout
+                android:layout_width="fill_parent"
+                android:layout_height="fill_parent"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:id="@+id/nameLabel"
+                    android:layout_width="100dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="20dp"
+                    android:ems="10"
+                    android:text="Name:"
+                    android:textSize="20sp"
+                    android:layout_weight="1"/>
+
+                <EditText
+                    android:id="@+id/nameText"
+                    android:layout_width="fill_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="20dp"
+                    android:ems="10"
+                    android:text=""
+                    android:textSize="20sp"
+                    android:inputType="textCapWords|textAutoCorrect"
+                    android:layout_weight="6"/>
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="fill_parent"
+                android:layout_height="fill_parent"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:id="@+id/speciesLabel"
+                    android:layout_width="100dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="20dp"
+                    android:ems="10"
+                    android:text="Species:"
+                    android:textSize="20sp"
+                    android:layout_weight="1"/>
+
+                <EditText
+                    android:id="@+id/speciesText"
+                    android:layout_width="fill_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="20dp"
+                    android:text=""
+                    android:textSize="20sp"
+                    android:inputType="textCapWords"
+                    android:layout_weight="6"/>
+            </LinearLayout>
 
             <ImageView
                 android:id="@+id/plantImage"
@@ -58,7 +111,6 @@
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="5dp"
                 android:ems="10"
-                android:inputType="textPersonName"
                 android:text="Watering Interval"
                 android:textSize="30sp" />
 
@@ -69,13 +121,14 @@
 
                 <EditText
                     android:id="@+id/wateringIntervalDays"
-                    android:layout_width="60dp"
+                    android:layout_width="fill_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginBottom="20dp"
                     android:ems="10"
                     android:text=""
                     android:textSize="20sp"
-                    android:inputType="number" />
+                    android:inputType="number"
+                    android:layout_weight="1"/>
 
                 <TextView
                     android:id="@+id/wateringIntervalDaysLabel"
@@ -84,15 +137,32 @@
                     android:layout_marginBottom="20dp"
                     android:ems="10"
                     android:text=" Days"
-                    android:textSize="20sp" />
+                    android:textSize="20sp"
+                    android:layout_weight="0.2"/>
             </LinearLayout>
+
+            <TextView
+                android:id="@+id/startDateLabel"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Start Date"
+                android:layout_marginBottom="5dp"
+                android:ems="10"
+                android:textSize="30sp"/>
+
+            <EditText
+                android:id="@+id/startDateText"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:hint="MM/DD/YY"
+                android:inputType="date"
+                android:maxLength="8"/>
 
             <TextView
                 android:id="@+id/locationLabel"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="5dp"
-                android:ems="10"
                 android:text="Location"
                 android:textSize="30sp" />
 
@@ -100,7 +170,6 @@
                 android:id="@+id/editText2"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:ems="10"
                 android:inputType="textPersonName"
                 android:text="somehow display location" />
 
@@ -125,7 +194,7 @@
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
                 android:hint="Write notes here..."
-                android:inputType="textCapSentences|textMultiLine"
+                android:inputType="textCapSentences|textMultiLine|textAutoCorrect"
                 android:maxLength="10000" />
 
             <ImageButton
