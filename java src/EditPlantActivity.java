@@ -193,7 +193,7 @@ public class EditPlantActivity extends AppCompatActivity{
     /*
         How to read plant afterwards:
         try {
-            FileInputStream fis = this.openFileInput("plant_name_here");
+            FileInputStream fis = openFileInput("hi_there.txt");
             ObjectInputStream is = new ObjectInputStream(fis);
             Plant testplant = (Plant) is.readObject();
             is.close();
@@ -234,6 +234,8 @@ public class EditPlantActivity extends AppCompatActivity{
         } else {
             wateringIntervalTemp = Integer.valueOf(wateringIntervalTemp2);
         }
+
+        formatPlantName();
         Plant plantObj = new Plant(plantName.getText().toString(), plantSpecies.getText().toString(),
                 mCurrentPhotoPath, startDateText.getText().toString(), wateringIntervalTemp,
                 notesText.getText().toString());
@@ -248,7 +250,7 @@ public class EditPlantActivity extends AppCompatActivity{
         }
 
         try {
-            FileOutputStream fos = this.openFileOutput(plantFile.getName(), Context.MODE_PRIVATE);
+            FileOutputStream fos = openFileOutput(plantName.getText().toString().replace(" ", "_").toLowerCase() + ".txt", Context.MODE_PRIVATE);
             ObjectOutputStream os = new ObjectOutputStream(fos);
             os.writeObject(plantObj);
             os.close();
@@ -366,23 +368,9 @@ public class EditPlantActivity extends AppCompatActivity{
      * precondition: plant name is not duplicated
      */
     private File createPlantFile() throws IOException {
-        String plantFileName = plantName.getText().toString().trim();
-
-        //delete mutiple spaces and punctuation
-        char prevChar = plantFileName.charAt(0);
-        int i = 1;
-        while (i < plantFileName.length() - 1) {
-            if (prevChar == ' ' && plantFileName.charAt(i) == ' ') {
-                plantFileName = plantFileName.substring(0, i) + plantFileName.substring(i+1);
-            } else {
-                prevChar = plantFileName.charAt(i);
-                i++;
-            }
-        }
-
-        plantName.setText(plantFileName); //fix the displayed name while you're at it
+        String plantFileName = plantName.getText().toString();
         plantFileName = plantFileName.replace(" ", "_").toLowerCase();
-        File storageDir = getExternalFilesDir(Environment.DIRECTORY_PICTURES);
+        File storageDir = getFilesDir();
         File plantFile = File.createTempFile(
                 plantFileName,  /* prefix */
                 ".txt",         /* suffix */
@@ -390,6 +378,24 @@ public class EditPlantActivity extends AppCompatActivity{
         );
 
         return plantFile;
+    }
+
+    private void formatPlantName() {
+        String plantNameString = plantName.getText().toString().trim();
+
+        //delete mutiple spaces and punctuation
+        char prevChar = plantNameString.charAt(0);
+        int i = 1;
+        while (i < plantNameString.length() - 1) {
+            if (prevChar == ' ' && plantNameString.charAt(i) == ' ') {
+                plantNameString = plantNameString.substring(0, i) + plantNameString.substring(i+1);
+            } else {
+                prevChar = plantNameString.charAt(i);
+                i++;
+            }
+        }
+
+        plantName.setText(plantNameString); //fix the displayed name while you're at it
     }
 }
 
