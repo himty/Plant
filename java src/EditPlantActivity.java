@@ -6,61 +6,129 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.graphics.Camera;
 import android.graphics.Matrix;
 import android.media.ExifInterface;
 import android.net.Uri;
 import android.os.Environment;
 import android.provider.MediaStore;
-import android.provider.Settings;
-import android.support.v4.content.FileProvider;
 import android.support.v7.app.AlertDialog;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.app.AppCompatActivity;
 import android.text.Editable;
 import android.text.TextWatcher;
-import android.text.method.ScrollingMovementMethod;
 import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
-import android.widget.SeekBar;
 import android.widget.TextView;
 
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
-public class EditPlantActivity extends AppCompatActivity {
+public class EditPlantActivity extends AppCompatActivity{
     final String TAG = "EditPlantActivity";
 
-    private static EditText wateringIntervalDays;
-    private static SeekBar wateringIntervalSeek;
+    //components to save
+    private static EditText plantName;
+    private static EditText plantSpecies;
     private static ImageView plantImage;
-    private static TextView notesText;
+    private static EditText wateringIntervalDays;
+    private static TextView location; //TODO: implement location (maybe not TextView)
+    private static EditText notesText;
+    private static EditText startDateText;
+
+    //other componenets
     private static Button rotatePlantButton;
 
-    static String mCurrentPhotoPath;
+    private static String mCurrentPhotoPath = null;
 
-    static final int REQUEST_TAKE_PHOTO = 1;
+    private static final int REQUEST_TAKE_PHOTO = 1;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_edit_plant);
+
+        plantName = (EditText) findViewById(R.id.nameText);
+        plantSpecies = (EditText) findViewById(R.id.speciesText);
         plantImage = (ImageView) findViewById(R.id.plantImage);
+        wateringIntervalDays = (EditText) findViewById(R.id.wateringIntervalDays);
+        notesText = (EditText) findViewById(R.id.notesText);
         rotatePlantButton = (Button) findViewById(R.id.btnRotatePlant);
-        rotatePlantButton.setEnabled(false);
+        startDateText = (EditText) findViewById(R.id.startDateText);
+
         initPlantImage();
+        initStartDate();
     }
 
     public void initPlantImage() {
         //TODO: if there is no loaded picture and if it's not a new entry
-        plantImage.setImageResource(R.drawable.no_picture);
+        if (mCurrentPhotoPath != null) {
+            BitmapFactory.Options bmOptions = new BitmapFactory.Options();
+            Bitmap bitmap = BitmapFactory.decodeFile(mCurrentPhotoPath,bmOptions);
+            plantImage.setImageBitmap(bitmap);
+            rotatePlantButton.setEnabled(true);
+        } else {
+            plantImage.setImageResource(R.drawable.no_picture);
+            rotatePlantButton.setEnabled(false);
+        }
+    }
+
+    public void initStartDate() {
+        final TextWatcher textWatcher = new TextWatcher() {
+            boolean shouldIgnore = false;
+
+            @Override
+            public void beforeTextChanged(CharSequence charSequence, int start, int count, int after) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence charSequence, int start, int before, int count) {
+            }
+
+            @Override
+            public void afterTextChanged(Editable editable) {
+                if (shouldIgnore) {
+                    return;
+                }
+
+                shouldIgnore = true;
+                //parse text into MM/DD/YY
+                String result = "";
+                String[] input = editable.toString().split("/");
+
+                boolean prevWas2 = false;
+                for (int i = 0; i < input.length; i++ ) {
+                    if (prevWas2) {
+                        result += "/";
+                    }
+                    if (input[i].length() == 2) {
+                        prevWas2 = true;
+                    }
+
+                    if (input[i].length() <= 2) {
+                        result += input[i];
+                    } else {
+                        result += input[i].substring(0,2) + "/" + input[i].substring(2);
+                    }
+                }
+
+                startDateText.setText(result);
+                startDateText.setSelection(startDateText.length());
+                shouldIgnore = false;
+            }
+        };
+
+        startDateText.addTextChangedListener(textWatcher);
     }
 
     public void setLocation(View v) {
@@ -85,9 +153,6 @@ public class EditPlantActivity extends AppCompatActivity {
                 // Continue only if the File was successfully created
                 if (photoFile != null) {
                     Uri photoURI = Uri.fromFile(photoFile);
-//                Uri photoURI = FileProvider.getUriForFile(this,
-//                        "com.plant.plant",
-//                        photoFile);
                     takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT, photoURI);
                     startActivityForResult(takePictureIntent, REQUEST_TAKE_PHOTO);
                 }
@@ -125,8 +190,75 @@ public class EditPlantActivity extends AppCompatActivity {
         plantImage.setImageBitmap(bitmap);
     }
 
+    /*
+        How to read plant afterwards:
+        try {
+            FileInputStream fis = this.openFileInput("plant_name_here");
+            ObjectInputStream is = new ObjectInputStream(fis);
+            Plant testplant = (Plant) is.readObject();
+            is.close();
+            fis.close();
+            Log.i(TAG, testplant.name);
+        }
+        catch (Exception e) {
+            e.printStackTrace();
+            Log.e(TAG, "Error: Cannot read from plant file");
+        }
+     */
     public void savePlant(View v) {
-        //TODO: save plant in memory
+        //TODO: save this plant in memory
+        //needs a name to be saved
+        if (plantName.getText().toString().equals("")) {
+            AlertDialog.Builder alertDialogBuilder =
+                    new AlertDialog.Builder(this)
+                            .setCancelable(false)
+                            .setTitle("Error")
+                            .setMessage("Please enter a plant name to save")
+                            .setPositiveButton("Ok", new DialogInterface.OnClickListener() {
+                                public void onClick(DialogInterface dialog, int which) {
+                                    dialog.cancel();
+                                }
+                            });
+            AlertDialog alertDialog = alertDialogBuilder.create();
+            alertDialog.show();
+            return;
+        }
+
+        //create plant object from data on this activity
+        //TODO: add days object to Plant initialization
+//        Plant plantObj = new Plant();
+        Log.i(TAG, wateringIntervalDays.getText().toString());
+        Integer wateringIntervalTemp;
+        String wateringIntervalTemp2 = wateringIntervalDays.getText().toString();
+        if (wateringIntervalTemp2 == null || wateringIntervalTemp2.equals("")) {
+            wateringIntervalTemp = null;
+        } else {
+            wateringIntervalTemp = Integer.valueOf(wateringIntervalTemp2);
+        }
+        Plant plantObj = new Plant(plantName.getText().toString(), plantSpecies.getText().toString(),
+                mCurrentPhotoPath, startDateText.getText().toString(), wateringIntervalTemp,
+                notesText.getText().toString());
+
+        File plantFile = null;
+        try {
+            plantFile = createImageFile();
+        }
+        catch (Exception e) {
+            e.printStackTrace();
+            Log.e(TAG, "Error: Plant save file cannot be created");
+        }
+
+        try {
+            FileOutputStream fos = this.openFileOutput(plantFile.getName(), Context.MODE_PRIVATE);
+            ObjectOutputStream os = new ObjectOutputStream(fos);
+            os.writeObject(plantObj);
+            os.close();
+            fos.close();
+        }
+        catch (Exception e) {
+            e.printStackTrace();
+            Log.e(TAG, "Error: Plant save file cannot be written into.");
+        }
     }
 
     private File createImageFile() throws IOException {
@@ -151,7 +283,7 @@ public class EditPlantActivity extends AppCompatActivity {
         if (requestCode == REQUEST_TAKE_PHOTO) {
             // Make sure the request was successful
             if (resultCode == RESULT_OK) {
-                //enable the rotate button
+                //enable the rotate button b/c it's not the default image anymore
                 rotatePlantButton.setEnabled(true);
 
                 BitmapFactory.Options bmOptions = new BitmapFactory.Options();
@@ -173,17 +305,14 @@ public class EditPlantActivity extends AppCompatActivity {
 
                         case ExifInterface.ORIENTATION_ROTATE_90:
                             bitmap = getRotatedImage(bitmap, 90);
-                            saveImage(new File(mCurrentPhotoPath), bitmap);
                             break;
 
                         case ExifInterface.ORIENTATION_ROTATE_180:
                             bitmap = getRotatedImage(bitmap, 180);
-                            saveImage(new File(mCurrentPhotoPath), bitmap);
                             break;
 
                         case ExifInterface.ORIENTATION_ROTATE_270:
                             bitmap = getRotatedImage(bitmap, 270);
-                            saveImage(new File(mCurrentPhotoPath), bitmap);
                             break;
 
                         case ExifInterface.ORIENTATION_NORMAL:
@@ -197,6 +326,8 @@ public class EditPlantActivity extends AppCompatActivity {
                     e.printStackTrace();
                     Log.e(TAG, "Error: Cannot find image (for rotaion)");
                 }
+
+                saveImage(new File(mCurrentPhotoPath), bitmap); //save the scaled version
                 plantImage.setImageBitmap(bitmap);
             }
         }
@@ -227,4 +358,25 @@ public class EditPlantActivity extends AppCompatActivity {
             Log.e(TAG, "Error: Cannot save plant image");
         }
     }
+
+    private void noFileWithSameName(File file) {
+
+    }
+
+    /*
+     * precondition: plant name is not duplicated
+     */
+    private File createPlantFile() throws IOException {
+        String plantFileName = plantName.getText().toString();
+        File storageDir = getExternalFilesDir(Environment.DIRECTORY_PICTURES);
+        File plantFile = File.createTempFile(
+                plantFileName,  /* prefix */
+                ".txt",         /* suffix */
+                storageDir      /* directory */
+        );
+
+        return plantFile;
+    }
 }
+
+
