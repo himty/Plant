@@ -65,6 +65,8 @@ public class EditPlantActivity extends AppCompatActivity{
         rotatePlantButton = (Button) findViewById(R.id.btnRotatePlant);
         startDateText = (EditText) findViewById(R.id.startDateText);
 
+        Log.i(TAG, getFilesDir().toString());
+
         initPlantImage();
         initStartDate();
     }
@@ -85,6 +87,7 @@ public class EditPlantActivity extends AppCompatActivity{
     public void initStartDate() {
         final TextWatcher textWatcher = new TextWatcher() {
             boolean shouldIgnore = false;
+            String prevValue = "";
 
             @Override
             public void beforeTextChanged(CharSequence charSequence, int start, int count, int after) {
@@ -104,27 +107,42 @@ public class EditPlantActivity extends AppCompatActivity{
                 shouldIgnore = true;
                 //parse text into MM/DD/YY
                 String result = "";
+                Log.i(TAG, editable.toString());
                 String[] input = editable.toString().split("/");
 
-                boolean prevWas2 = false;
                 for (int i = 0; i < input.length; i++ ) {
-                    if (prevWas2) {
-                        result += "/";
-                    }
-                    if (input[i].length() == 2) {
-                        prevWas2 = true;
-                    }
-
-                    if (input[i].length() <= 2) {
-                        result += input[i];
+                    //while deleting number before a slash on the last section or deleting
+                    // a slash, don't create a new slash
+                    if (prevValue.length() > editable.length() && i == input.length - 1
+                            && (editable.length() == 0 || (editable.charAt(editable.length() - 1)) == '/')) {
+                            result += input[i];
                     } else {
-                        result += input[i].substring(0,2) + "/" + input[i].substring(2);
+                        if (i < 2) { //not on year section
+                            if (input[i].length() == 1) {
+                                result += input[i];
+                            }
+                            if (input[i].length() == 2) {
+                                if (prevValue.length() > editable.length() && prevValue.charAt(prevValue.length()-1) == '/'
+                                        && i == input.length - 1) { //just deleted a slash
+                                    result += input[i]; //no slash
+                                } else {
+                                    result += input[i] + "/"; //yes slash
+                                }
+                            }
+                            if (input[i].length() == 3) {
+                                result += input[i].substring(0,2) + "/" + input[i].charAt(2);
+                            }
+                        } else {
+                            result += input[i];
+                        }
                     }
                 }
 
                 startDateText.setText(result);
                 startDateText.setSelection(startDateText.length());
                 shouldIgnore = false;
+                prevValue = result;
+
             }
         };
 
@@ -226,7 +244,6 @@ public class EditPlantActivity extends AppCompatActivity{
 
         //create plant object from data on this activity
         //TODO: add days object to Plant initialization
-        Log.i(TAG, wateringIntervalDays.getText().toString());
         Integer wateringIntervalTemp;
         String wateringIntervalTemp2 = wateringIntervalDays.getText().toString();
         if (wateringIntervalTemp2.equals("")) {
@@ -250,6 +267,7 @@ public class EditPlantActivity extends AppCompatActivity{
         }
 
         try {
+            Log.i("ListView",plantName.getText().toString().replace(" ", "_").toLowerCase() + ".txt" );
             FileOutputStream fos = openFileOutput(plantName.getText().toString().replace(" ", "_").toLowerCase() + ".txt", Context.MODE_PRIVATE);
             ObjectOutputStream os = new ObjectOutputStream(fos);
             os.writeObject(plantObj);
