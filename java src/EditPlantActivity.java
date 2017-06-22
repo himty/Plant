@@ -65,8 +65,6 @@ public class EditPlantActivity extends AppCompatActivity{
         rotatePlantButton = (Button) findViewById(R.id.btnRotatePlant);
         startDateText = (EditText) findViewById(R.id.startDateText);
 
-        Log.i(TAG, getFilesDir().toString());
-
         initPlantImage();
         initStartDate();
     }
@@ -209,14 +207,14 @@ public class EditPlantActivity extends AppCompatActivity{
     }
 
     /*
-        How to read plant afterwards:
+        How to read plant afterwards ("_plt_" distinguishes it from other files):
         try {
-            FileInputStream fis = openFileInput("hi_there.txt");
+            FileInputStream fis = openFileInput("_plt_" + "name_of_plant" + ".txt");
             ObjectInputStream is = new ObjectInputStream(fis);
             Plant testplant = (Plant) is.readObject();
             is.close();
             fis.close();
-            Log.i(TAG, testplant.name);
+            Log.i(TAG, testplant.species); //or any other characteristic in Plant class
         }
         catch (Exception e) {
             e.printStackTrace();
@@ -257,18 +255,9 @@ public class EditPlantActivity extends AppCompatActivity{
                 mCurrentPhotoPath, startDateText.getText().toString(), wateringIntervalTemp,
                 notesText.getText().toString());
 
-        File plantFile = null;
-        try {
-            plantFile = createPlantFile();
-        }
-        catch (Exception e) {
-            e.printStackTrace();
-            Log.e(TAG, "Error: Plant save file cannot be created");
-        }
-
         try {
             Log.i("ListView",plantName.getText().toString().replace(" ", "_").toLowerCase() + ".txt" );
-            FileOutputStream fos = openFileOutput(plantName.getText().toString().replace(" ", "_").toLowerCase() + ".txt", Context.MODE_PRIVATE);
+            FileOutputStream fos = openFileOutput("_plt_"+plantName.getText().toString().replace(" ", "_").toLowerCase() + ".txt", Context.MODE_PRIVATE);
             ObjectOutputStream os = new ObjectOutputStream(fos);
             os.writeObject(plantObj);
             os.close();
@@ -284,7 +273,7 @@ public class EditPlantActivity extends AppCompatActivity{
         // Create an image file name
         String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
         String imageFileName = "JPEG_" + timeStamp + "_";
-        File storageDir = getExternalFilesDir(Environment.DIRECTORY_PICTURES);
+        File storageDir = getFilesDir();
         File image = File.createTempFile(
                 imageFileName,  /* prefix */
                 ".jpg",         /* suffix */
@@ -382,18 +371,10 @@ public class EditPlantActivity extends AppCompatActivity{
 
     }
 
-    /*
-     * precondition: plant name is not duplicated
-     */
     private File createPlantFile() throws IOException {
         String plantFileName = plantName.getText().toString();
         plantFileName = plantFileName.replace(" ", "_").toLowerCase();
-        File storageDir = getFilesDir();
-        File plantFile = File.createTempFile(
-                plantFileName,  /* prefix */
-                ".txt",         /* suffix */
-                storageDir      /* directory */
-        );
+        File plantFile = new File (getFilesDir() + "/"+ plantFileName + ".txt");
 
         return plantFile;
     }
