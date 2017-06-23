@@ -32,12 +32,23 @@
         app:srcCompat="@android:drawable/ic_dialog_email" />
 
     <Button
-        android:id="@+id/button"
+        android:id="@+id/btnOpenList"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="bottom|center_horizontal"
         android:text="@string/open_list_view"
+        android:onClick="openListView"
         app:layout_anchor="@+id/include"
+        app:layout_anchorGravity="center_vertical|center_horizontal" />
+
+    <Button
+        android:id="@+id/btnOpenPlantEdit"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom|center_horizontal"
+        android:text="Open Plant View"
+        android:onClick="openPlantView"
+        app:layout_anchor="@+id/btnOpenList"
         app:layout_anchorGravity="center_vertical|center_horizontal" />
 
 </android.support.design.widget.CoordinatorLayout>
