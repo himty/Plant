@@ -1,15 +1,20 @@
 package com.plant.plant;
 
+import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.View;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.Button;
 
 public class MainActivity extends AppCompatActivity {
+    static String TAG = "MainActivity";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -26,6 +31,14 @@ public class MainActivity extends AppCompatActivity {
                         .setAction("Action", null).show();
             }
         });
+
+//        Button btnOpenList = (Button)(findViewById(R.id.btnOpenList));
+//        btnOpenList.setOnClickListener(new View.OnClickListener(){
+//            @Override
+//            public void onClick(View v) {
+//                openListView();
+//            }
+//        });
     }
 
     @Override
@@ -48,5 +61,15 @@ public class MainActivity extends AppCompatActivity {
         }
 
         return super.onOptionsItemSelected(item);
+    }
+
+    public void openListView(View v) {
+        Intent openListViewIntent = new Intent(getBaseContext(), ListViewActivity.class);
+        startActivity(openListViewIntent);
+    }
+
+    public void openPlantView(View v) {
+        Intent openPlantViewIntent = new Intent(getBaseContext(), EditPlantActivity.class);
+        startActivity(openPlantViewIntent);
     }
 }
