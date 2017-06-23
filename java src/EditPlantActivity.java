@@ -9,7 +9,6 @@ import android.graphics.BitmapFactory;
 import android.graphics.Matrix;
 import android.media.ExifInterface;
 import android.net.Uri;
-import android.os.Environment;
 import android.provider.MediaStore;
 import android.support.v7.app.AlertDialog;
 import android.os.Bundle;
@@ -25,10 +24,8 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -49,6 +46,7 @@ public class EditPlantActivity extends AppCompatActivity{
     private static Button rotatePlantButton;
 
     private static String mCurrentPhotoPath = null;
+    boolean flag_stop_saveplant;
 
     private static final int REQUEST_TAKE_PHOTO = 1;
 
@@ -88,24 +86,19 @@ public class EditPlantActivity extends AppCompatActivity{
             String prevValue = "";
 
             @Override
-            public void beforeTextChanged(CharSequence charSequence, int start, int count, int after) {
-
-            }
+            public void beforeTextChanged(CharSequence charSequence, int start, int count, int after) {}
 
             @Override
-            public void onTextChanged(CharSequence charSequence, int start, int before, int count) {
-            }
+            public void onTextChanged(CharSequence charSequence, int start, int before, int count) {}
 
             @Override
             public void afterTextChanged(Editable editable) {
-                if (shouldIgnore) {
+                if (shouldIgnore)
                     return;
-                }
 
                 shouldIgnore = true;
                 //parse text into MM/DD/YY
                 String result = "";
-                Log.i(TAG, editable.toString());
                 String[] input = editable.toString().split("/");
 
                 for (int i = 0; i < input.length; i++ ) {
@@ -207,6 +200,7 @@ public class EditPlantActivity extends AppCompatActivity{
     }
 
     /*
+        Note: this overwrites previous files with the same name
         How to read plant afterwards ("_plt_" distinguishes it from other files):
         try {
             FileInputStream fis = openFileInput("_plt_" + "name_of_plant" + ".txt");
@@ -222,7 +216,6 @@ public class EditPlantActivity extends AppCompatActivity{
         }
      */
     public void savePlant(View v) {
-        //TODO: save this plant in memory
         //needs a name to be saved
         if (plantName.getText().toString().equals("")) {
             AlertDialog.Builder alertDialogBuilder =
@@ -240,8 +233,37 @@ public class EditPlantActivity extends AppCompatActivity{
             return;
         }
 
+        formatPlantName();
+
+        //TODO: And the user is not trying to edit an existing plant entry
+        if(new File(getFilesDir()+"/_plt_"+plantName.getText().toString().replace(" ", "_").toLowerCase() + ".txt").exists()) {
+            AlertDialog.Builder alertDialogBuilder =
+                    new AlertDialog.Builder(this)
+                            .setCancelable(false)
+                            .setTitle("Warning")
+                            .setMessage("A plant is already named "+plantName.getText()+". Saving "
+                                +"will overwrite the previous plant entry.")
+                            .setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+                                public void onClick(DialogInterface dialog, int which) {
+                                    dialog.cancel(); //do nothing
+                                }
+                            })
+                            .setPositiveButton("Save Anyways", new DialogInterface.OnClickListener() {
+                                public void onClick(DialogInterface dialog, int which) {
+                                    doSavingAction();
+                                    dialog.cancel();
+                                }
+                            });
+
+            AlertDialog alertDialog = alertDialogBuilder.create();
+            alertDialog.show();
+        } else {
+            doSavingAction();
+        }
+    }
+
+    private void doSavingAction() {
         //create plant object from data on this activity
-        //TODO: add days object to Plant initialization
         Integer wateringIntervalTemp;
         String wateringIntervalTemp2 = wateringIntervalDays.getText().toString();
         if (wateringIntervalTemp2.equals("")) {
@@ -250,13 +272,11 @@ public class EditPlantActivity extends AppCompatActivity{
             wateringIntervalTemp = Integer.valueOf(wateringIntervalTemp2);
         }
 
-        formatPlantName();
         Plant plantObj = new Plant(plantName.getText().toString(), plantSpecies.getText().toString(),
                 mCurrentPhotoPath, startDateText.getText().toString(), wateringIntervalTemp,
                 notesText.getText().toString());
 
         try {
-            Log.i("ListView",plantName.getText().toString().replace(" ", "_").toLowerCase() + ".txt" );
             FileOutputStream fos = openFileOutput("_plt_"+plantName.getText().toString().replace(" ", "_").toLowerCase() + ".txt", Context.MODE_PRIVATE);
             ObjectOutputStream os = new ObjectOutputStream(fos);
             os.writeObject(plantObj);
@@ -367,22 +387,10 @@ public class EditPlantActivity extends AppCompatActivity{
         }
     }
 
-    private void noFileWithSameName(File file) {
-
-    }
-
-    private File createPlantFile() throws IOException {
-        String plantFileName = plantName.getText().toString();
-        plantFileName = plantFileName.replace(" ", "_").toLowerCase();
-        File plantFile = new File (getFilesDir() + "/"+ plantFileName + ".txt");
-
-        return plantFile;
-    }
-
     private void formatPlantName() {
         String plantNameString = plantName.getText().toString().trim();
 
-        //delete mutiple spaces and punctuation
+        //delete mutiple spaces
         char prevChar = plantNameString.charAt(0);
         int i = 1;
         while (i < plantNameString.length() - 1) {
@@ -395,6 +403,10 @@ public class EditPlantActivity extends AppCompatActivity{
         }
 
         plantName.setText(plantNameString); //fix the displayed name while you're at it
+    }
+
+    private void setSavePlantStopFlag(boolean stop) {
+        flag_stop_saveplant = stop;
     }
 }
 
